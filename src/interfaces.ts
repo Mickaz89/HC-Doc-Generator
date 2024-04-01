@@ -20,4 +20,5 @@ export interface FormBody {
   driving_license: boolean;
   language: Languages;
   favorite_color: string;
+  jobId: string;
 }

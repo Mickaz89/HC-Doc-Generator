@@ -6,7 +6,6 @@ import * as path from 'path';
 import { google, Auth } from 'googleapis';
 import { Readable } from 'stream';
 import { processField } from './formUtils';
-import { RedisService } from './redis.service';
 import {
   ClientProxy,
   ClientProxyFactory,
@@ -16,7 +15,7 @@ import {
 @Injectable()
 export class AppService {
   private client: ClientProxy;
-  constructor(private readonly redisService: RedisService) {
+  constructor() {
     this.client = ClientProxyFactory.create({
       transport: Transport.REDIS,
       options: {
@@ -27,6 +26,8 @@ export class AppService {
   }
 
   async generateForm(formBody: FormBody): Promise<string> {
+    console.log('GENERATE FORM ', formBody);
+    const { jobId } = formBody;
     const pdfDoc = await this.loadPdfDocument();
     const form = pdfDoc.getForm();
     const fields = form.getFields();
@@ -37,8 +38,7 @@ export class AppService {
     const pdfBytes = await pdfDoc.save();
     const url = await this.uploadToGoogleDrive(pdfBytes);
 
-    await this.redisService.set('status', 'finish');
-    this.client.emit('document', { status: 'finish', url });
+    this.client.emit('document', { jobId, status: 'completed', url });
 
     return url;
   }
