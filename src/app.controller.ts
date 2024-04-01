@@ -9,7 +9,6 @@ export class AppController {
 
   @MessagePattern('generate')
   generateForm(formBody: FormBody): Promise<string> {
-    console.log('CONTROLLER ', formBody);
     return this.appService.generateForm(formBody);
   }
 }

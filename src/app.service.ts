@@ -26,7 +26,6 @@ export class AppService {
   }
 
   async generateForm(formBody: FormBody): Promise<string> {
-    console.log('GENERATE FORM ', formBody);
     const { jobId } = formBody;
     const pdfDoc = await this.loadPdfDocument();
     const form = pdfDoc.getForm();
