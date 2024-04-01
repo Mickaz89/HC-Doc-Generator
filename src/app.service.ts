@@ -7,10 +7,24 @@ import { google, Auth } from 'googleapis';
 import { Readable } from 'stream';
 import { processField } from './formUtils';
 import { RedisService } from './redis.service';
+import {
+  ClientProxy,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
 
 @Injectable()
 export class AppService {
-  constructor(private readonly redisService: RedisService) {}
+  private client: ClientProxy;
+  constructor(private readonly redisService: RedisService) {
+    this.client = ClientProxyFactory.create({
+      transport: Transport.REDIS,
+      options: {
+        host: 'localhost',
+        port: 6379,
+      },
+    });
+  }
 
   async generateForm(formBody: FormBody): Promise<string> {
     const pdfDoc = await this.loadPdfDocument();
@@ -24,6 +38,7 @@ export class AppService {
     const url = await this.uploadToGoogleDrive(pdfBytes);
 
     await this.redisService.set('status', 'finish');
+    this.client.emit('document', { status: 'finish', url });
 
     return url;
   }
