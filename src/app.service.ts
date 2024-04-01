@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FormBody } from './interfaces';
+import { FormBody, JobStatus } from './types';
 import { PDFDocument, PDFField } from 'pdf-lib';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,16 +11,17 @@ import {
   ClientProxyFactory,
   Transport,
 } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
   private client: ClientProxy;
-  constructor() {
+  constructor(private configService: ConfigService) {
     this.client = ClientProxyFactory.create({
       transport: Transport.REDIS,
       options: {
-        host: 'localhost',
-        port: 6379,
+        host: configService.get<string>('REDIS_HOST'),
+        port: configService.get<number>('REDIS_PORT'),
       },
     });
   }
@@ -37,7 +38,7 @@ export class AppService {
     const pdfBytes = await pdfDoc.save();
     const url = await this.uploadToGoogleDrive(pdfBytes);
 
-    this.client.emit('document', { jobId, status: 'completed', url });
+    this.client.emit('document', { jobId, status: JobStatus.COMPLETED, url });
 
     return url;
   }

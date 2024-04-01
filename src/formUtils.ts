@@ -1,5 +1,5 @@
 import { PDFCheckBox, PDFDropdown, PDFField, PDFTextField } from 'pdf-lib';
-import { FormBody } from './interfaces';
+import { FormBody } from './types';
 
 export const languageMapping = {
   'Language 1 Check Box': 'deutch',

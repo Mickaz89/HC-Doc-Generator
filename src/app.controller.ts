@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { AppService } from './app.service';
-import { FormBody } from './interfaces';
+import { FormBody } from './types';
 
 @Controller()
 export class AppController {

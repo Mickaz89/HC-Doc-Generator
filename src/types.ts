@@ -6,6 +6,11 @@ export enum Languages {
   LATIN = 'latin',
 }
 
+export enum JobStatus {
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+}
+
 export interface FormBody {
   given_name: string;
   family_name: string;
